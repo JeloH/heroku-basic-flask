@@ -1,18 +1,18 @@
-from flask import Flask
-from datetime import datetime
+import numpy as np
+from flask import Flask, request, jsonify
+import pickle
+
 app = Flask(__name__)
+model = pickle.load(open('model.pkl','rb'))
 
-@app.route('/')
-def homepage():
-    the_time = datetime.now().strftime("%A, %d %b %Y %l:%M %p")
+y_pred = model.predict(np.array([[3.14371429e+05, 2.03099995e+01]]))
 
-    return """
-    <h1>Hello heroku</h1>
-    <p>It is currently {time}.</p>
-
-    <img src="http://loremflickr.com/600/400" />
-    """.format(time=the_time)
-
+@app.route("/predict")
+def predict():
+    vol_moving_avg = request.args.get('vol_moving_avg')
+    adj_close_rolling_med = request.args.get('adj_close_rolling_med')
+    test1=str(y_pred)
+    print(y_pred)
+    return test1
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
-
+    app.run(port=5000, debug=True)
